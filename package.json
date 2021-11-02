@@ -1,0 +1,24 @@
+{
+	"main": "index.js",
+	"dependencies": {
+		"@short-url/shorturl": "^1.0.1",
+		"canvas": "^2.8.0",
+		"chart.js": "^3.5.1",
+		"chartjs": "^0.3.24",
+		"chartjs-node-canvas": "^4.1.4",
+		"chartjs-plugin-datalabels": "^2.0.0",
+		"cuttly": "^1.0.1",
+		"discord-welcome": "^2.0.2",
+		"discord.js": "^12.5.3",
+		"mysql": "^2.18.1",
+		"node-fetch": "^2.0.0",
+		"node-url-shortener": "^2.0.0",
+		"open": "^8.2.1",
+		"prettylink": "^1.0.0",
+		"quickchart-js": "^1.4.2",
+		"shortener": "^0.1.0",
+		"shorturl": "0.0.3",
+		"tinyurl": "^1.1.7",
+		"url-minify": "^2.2.12"
+	}
+}
