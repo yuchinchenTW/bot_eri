@@ -1674,7 +1674,7 @@ client.on("message", async msg => {
       if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)<32))||(st_year === fin_year && st_month === fin_month)) {
         quer = "SELECT AVG(`avgprize`) as avg, DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year && st_month !== fin_month)) {
+      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year || st_month !== fin_month)) {
         quer = "SELECT AVG(`avgprize`) as avg, MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
       console.log(quer)
@@ -1724,7 +1724,7 @@ client.on("message", async msg => {
       if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)<32))||(st_year === fin_year && st_month === fin_month)){
         quer = "SELECT AVG(`bestprize`) as avg, DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year && st_month !== fin_month)) {
+      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year || st_month !== fin_month)) {
         quer = "SELECT AVG(`bestprize`) as avg, MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
       console.log(quer)
