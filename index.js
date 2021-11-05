@@ -1319,7 +1319,57 @@ client.on("message", async msg => {
       msg.channel.send(embed);
     }
 
+     if (msg.content.includes("hismone(") && msging === true && !msg.content.includes("錯誤") && msg.content.indexOf("h") == 0) {
+      msg.reply("wait for it 搜尋中稍等");
 
+      let endindex = msg.content.indexOf(")");
+      let sub = msg.content.substring(8, endindex);
+      console.log(sub)
+      let spli = sub.split(',');
+      if (spli.length != 6) {
+        msg.reply("錯誤格式 hismone(yy,mm,dd,yy,mm,dd)");
+        return;
+      }
+      if (spli[0].length >= 5) {
+        msg.reply("錯誤查詢物件輸入");
+        return;
+      }
+      if (parseInt(spli[0]) < 2021) {
+        msg.reply("起始必須大於2021年");
+        return;
+      }
+      if (parseInt(spli[1]) > 12 || parseInt(spli[1]) < 1) {
+        msg.reply("起始月份<=12&&>=1");
+        return;
+      }
+      if (parseInt(spli[2]) > 31 || parseInt(spli[2]) < 1) {
+        msg.reply("起始日<=31&&>=1");
+        return;
+      }
+      if (parseInt(spli[3]) < 2021) {
+        msg.reply("結束必須大於2021年");
+        return;
+      }
+      if (parseInt(spli[4]) > 12 || parseInt(spli[4]) < 1) {
+        msg.reply("結束月份<=12&&>=1");
+        return;
+      }
+
+      if (parseInt(spli[5]) > 31 || parseInt(spli[5]) < 1) {
+
+        msg.reply("結束日<=31&&>=1");
+        return;
+      }
+      if (parseInt(spli[0]) > parseInt(spli[3])) {
+        msg.reply("起始年份不可大於結束年分");
+        return;
+      }
+      msg.reply("mute my self");
+      await db_money(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5]);
+      msging = true;
+
+
+    }
 
 
 
@@ -1371,6 +1421,7 @@ client.on("message", async msg => {
       }
       if (parseInt(spli[1]) > parseInt(spli[4])) {
         msg.reply("起始年份不可大於結束年分")
+        return;
       }
       msg.reply("mute my self");
       await db_search(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5], spli[6]);
@@ -1648,7 +1699,45 @@ client.on("message", async msg => {
       return re;
     }
 
+    
+    async function db_money(st_year, st_month, st_day, fin_year, fin_month, fin_day) {
 
+      //if (obj.length >= 6) return
+      var con = await mysql.createConnection({
+        host: host,
+        user: usr,
+        password: mySecret,
+        database: db
+      });
+
+      await con.connect(function(err) {
+        if (err) {
+          console.log(err)
+          return
+        }
+        console.log("Connected to database!");
+      });
+      let quer = "SELECT CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00') AS `currentTime`,`money` WHERE AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " " + "00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + "  " + " 23:59:59'";
+      console.log(quer)
+      //SELECT * FROM `prizes` WHERE `objName`='幽暗' AND `currentTime` BETWEEN '2021-10-21 00:00:00' AND '2021-10-22 23:59:59'
+      //INSERT INTO `prizes`( `objName`, `avgprize`, `bestprize`, `url`) VALUES ([value-2],[value-3],[value-4],[value-5])
+      //"SELECT " + "CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00') AS `currentTime` " + " FROM prizes"
+      let re = "empty";
+      await con.query(quer, async (err, result) => {
+        if (err) {
+          throw err
+        }
+        console.log(result)
+        const words = JSON.stringify(result).split("}");
+        console.log(words)
+        for (let i = 0; i < words.length; i++) {
+          msg.channel.send(words[i])
+        }
+      })
+      await con.end();
+      await console.log("connection done");
+      return re;
+    }
 
 
 
