@@ -1717,7 +1717,7 @@ client.on("message", async msg => {
         }
         console.log("Connected to database!");
       });
-      let quer = "SELECT CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00') AS `currentTime`,`money` WHERE AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " " + "00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + "  " + " 23:59:59'";
+      let quer = "SELECT CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00') AS `currentTime`,`bestprice` FROM `money` WHERE `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " " + "00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + "  " + " 23:59:59'";
       console.log(quer)
       //SELECT * FROM `prizes` WHERE `objName`='幽暗' AND `currentTime` BETWEEN '2021-10-21 00:00:00' AND '2021-10-22 23:59:59'
       //INSERT INTO `prizes`( `objName`, `avgprize`, `bestprize`, `url`) VALUES ([value-2],[value-3],[value-4],[value-5])
