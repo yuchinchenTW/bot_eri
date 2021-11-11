@@ -1614,10 +1614,10 @@ client.on("message", async msg => {
       console.log(avg)
       let str_best="";
       let str_avg="";
-      if(deal==false){
+      if(deal==true){
             str_best="歷史平均最佳成交價格";
             str_avg="歷史平均成交價格";
-      }else if(deal == true){
+      }else if(deal == false){
             str_best="歷史平均最佳未成交價格";
             str_avg="歷史平均未成交價格";
 
