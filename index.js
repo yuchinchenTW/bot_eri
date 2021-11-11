@@ -1141,7 +1141,11 @@ client.on("message", async msg => {
       console.log(arr)
       result += "最高可能價格:\n";
       for (var i = 0; i < 10; i++) {
-        if(arr[i]<=9000)result += "1:" + arr[i] + "萬\n";
+        if(arr[i]<=3000){
+          if (arr.length > 6 && arr[i] / arr[i + 1] < 2){
+          result += "1:" + arr[i] + "萬\n";
+          }
+          }
       }
       msging = true;
       await msg.reply(result);
