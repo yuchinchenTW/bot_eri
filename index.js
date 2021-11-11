@@ -68,9 +68,9 @@ client.on("ready", () => {
 
 
 client.on("message", async msg => {
-  if (msg.channel.id === "900795952883986462" ||
-    msg.channel.id === "900795952883986462" ||
-    msg.channel.id === "900795952883986462") {
+  if (msg.channel.id === "418076288625016834" ||
+    msg.channel.id === "418076288625016834" ||
+    msg.channel.id === "418076288625016834") {
     let item = "";
     let section = 0;
     let blank = 0;
