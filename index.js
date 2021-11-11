@@ -1172,6 +1172,8 @@ client.on("message", async msg => {
       msg.reply("以下指令直接輸入即可不用加符號，一次只能查一個")
       msg.channel.send(result);
       msg.channel.send("---------------------------");
+      msg.channel.send("查詢歷史幣值  hismoney(yy,mm,dd,yy,mm,dd)");
+      msg.channel.send("---------------------------");
       msg.channel.send("有任何問題可以到巴哈留言");
       msg.channel.send("https://forum.gamer.com.tw/C.php?bsn=7650&snA=1018172&tnum=2");
       msg.channel.send("---------------------------");
