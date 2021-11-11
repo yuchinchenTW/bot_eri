@@ -1096,7 +1096,7 @@ client.on("message", async msg => {
       while (bool) {
         msging = false;
         await sleep(200);
-        URL = "https://www.8591.com.tw/mallList-list.html?searchGame=859&searchType=0&searchKey=&firstRow=" + section;
+        URL = "https://www.8591.com.tw/mallList-list.html?searchGame=859&searchServer=0&buyStatus=1&searchType=0&searchKey=&firstRow=" + section;
         console.log(URL);
         const _constdata = await getRawData(URL);
         let data = _constdata;
@@ -1319,7 +1319,57 @@ client.on("message", async msg => {
       msg.channel.send(embed);
     }
 
+     if (msg.content.includes("hismone(") && msging === true && !msg.content.includes("錯誤") && msg.content.indexOf("h") == 0) {
+      msg.reply("wait for it 搜尋中稍等");
 
+      let endindex = msg.content.indexOf(")");
+      let sub = msg.content.substring(8, endindex);
+      console.log(sub)
+      let spli = sub.split(',');
+      if (spli.length != 6) {
+        msg.reply("錯誤格式 hismone(yy,mm,dd,yy,mm,dd)");
+        return;
+      }
+      if (spli[0].length >= 5) {
+        msg.reply("錯誤查詢物件輸入");
+        return;
+      }
+      if (parseInt(spli[0]) < 2021) {
+        msg.reply("起始必須大於2021年");
+        return;
+      }
+      if (parseInt(spli[1]) > 12 || parseInt(spli[1]) < 1) {
+        msg.reply("起始月份<=12&&>=1");
+        return;
+      }
+      if (parseInt(spli[2]) > 31 || parseInt(spli[2]) < 1) {
+        msg.reply("起始日<=31&&>=1");
+        return;
+      }
+      if (parseInt(spli[3]) < 2021) {
+        msg.reply("結束必須大於2021年");
+        return;
+      }
+      if (parseInt(spli[4]) > 12 || parseInt(spli[4]) < 1) {
+        msg.reply("結束月份<=12&&>=1");
+        return;
+      }
+
+      if (parseInt(spli[5]) > 31 || parseInt(spli[5]) < 1) {
+
+        msg.reply("結束日<=31&&>=1");
+        return;
+      }
+      if (parseInt(spli[0]) > parseInt(spli[3])) {
+        msg.reply("起始年份不可大於結束年分");
+        return;
+      }
+      msg.reply("mute my self");
+      await db_money(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5]);
+      msging = true;
+
+
+    }
 
 
 
@@ -1371,6 +1421,7 @@ client.on("message", async msg => {
       }
       if (parseInt(spli[1]) > parseInt(spli[4])) {
         msg.reply("起始年份不可大於結束年分")
+        return;
       }
       msg.reply("mute my self");
       await db_search(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5], spli[6]);
@@ -1428,6 +1479,58 @@ client.on("message", async msg => {
 
 
     }
+
+      if (msg.content.includes("hismoney(") && msging === true && !msg.content.includes("錯誤") && msg.content.indexOf("h") == 0) {
+      msg.reply("wait for it 搜尋中稍等");
+
+      let endindex = msg.content.indexOf(")");
+      let sub = msg.content.substring(9, endindex);
+      console.log(sub)
+      let spli = sub.split(',');
+      if (spli.length != 6) {
+        msg.reply("錯誤格式 hismoney(yy,mm,dd,yy,mm,dd)");
+        return;
+      }
+    
+      if (parseInt(spli[0]) < 2021) {
+        msg.reply("起始必須大於2021年");
+        return;
+      }
+      if (parseInt(spli[1]) > 12 || parseInt(spli[1]) < 1) {
+        msg.reply("起始月份<=12&&>=1");
+        return;
+      }
+      if (parseInt(spli[2]) > 31 || parseInt(spli[2]) < 1) {
+        msg.reply("起始日<=31&&>=1");
+        return;
+      }
+      if (parseInt(spli[3]) < 2021) {
+        msg.reply("結束必須大於2021年");
+        return;
+      }
+      if (parseInt(spli[4]) > 12 || parseInt(spli[4]) < 1) {
+        msg.reply("結束月份<=12&&>=1");
+        return;
+      }
+
+      if (parseInt(spli[5]) > 31 || parseInt(spli[5]) < 1) {
+
+        msg.reply("結束日<=31&&>=1");
+        return;
+      }
+      if (parseInt(spli[0]) > parseInt(spli[3])) {
+        msg.reply("起始年份不可大於結束年分")
+        return;
+      }
+      msg.reply("mute my self");
+      await chart_money(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5]);
+      msging = true;
+
+
+    }
+
+
+
 
 
     if (msg.content.includes("currentchart(") && msging === true && !msg.content.includes("錯誤") && msg.content.indexOf("c") == 0) {
@@ -1511,10 +1614,10 @@ client.on("message", async msg => {
       console.log(avg)
       let str_best="";
       let str_avg="";
-      if(deal==true){
+      if(deal==false){
             str_best="歷史平均最佳成交價格";
             str_avg="歷史平均成交價格";
-      }else if(deal == false){
+      }else if(deal == true){
             str_best="歷史平均最佳未成交價格";
             str_avg="歷史平均未成交價格";
 
@@ -1608,6 +1711,108 @@ client.on("message", async msg => {
       msg.channel.send(embed);
     }
 
+       async function drawmoney(obj,dates, best,deal) {
+      const canvasRenderService = new ChartJSNodeCanvas({
+        width: 800, height: 600, chartCallback: (ChartJS) => {
+          /** Add plugins here **/
+          //ChartJS.global.defaultFontFamily = 'VTKS UNAMOUR';
+          ChartJS.register(require('chartjs-plugin-datalabels'))
+        }
+      });
+      canvasRenderService.registerFont('./fonts/NotoSansTC-Black.otf', { family: 'Montserrat', weight: '900' })
+
+      console.log(dates)
+      console.log(best)
+      //console.log(avg)
+      let str_best="";
+      let str_avg="";
+      if(deal==true){
+            str_best="歷史平均最佳成交價格";
+            str_avg="歷史平均成交價格";
+      }else if(deal == false){
+            str_best="歷史平均最佳未成交價格";
+            str_avg="歷史平均未成交價格";
+
+      }
+      const configuration = {
+        type: "line",
+        data: {
+          labels: dates,
+          datasets: [
+            {
+              label: obj+str_best,
+              data: best,
+              //backgroundColor: "rgba(238, 238, 87, 0.3)",
+              borderColor: "rgba(238, 238,87, 0.3)",
+              borderWidth: 5,
+              fill: true,
+              pointRadius: 1
+            }
+          ]
+        },
+        options: {
+          
+          scales: {
+            xAxes: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: "green",
+                 font: {
+                                    size: 14,
+                                    family:'vazir'
+                        }
+              }
+              
+            },
+            yAxes: {
+              grid: {
+                lineWidth: 1,
+                color: "rgba(255, 255, 255, 0.8)"
+              },
+              ticks: {
+                color: "green",
+                 font: {
+                                    size: 16,
+                                    family:'vazir'
+                        }
+              }
+            }
+          },
+          plugins: {
+            datalabels: {
+                anchor: 'end',
+        align: 'left',
+                formatter: Math.round,
+                color: "red",
+                  font: {
+                    size: 19,
+                    weight: 'bold'
+                  }
+            },
+             legend: {
+              labels: {
+                  color: "green",  // not 'fontColor:' anymore
+          // fontSize: 18  // not 'fontSize:' anymore
+                  font: {
+                    size: 20 // 'size' now within object 'font {}'
+                  }
+                }
+              }
+          }
+
+        }
+      };
+      const image = await canvasRenderService.renderToBuffer(configuration);
+
+      let embed = new Discord.MessageEmbed();
+      const attachment = new Discord.MessageAttachment(image, "image.png");
+      embed.attachFiles(attachment);
+      embed.setImage("attachment://image.png");
+      msg.channel.send(embed);
+    }
+
 
     async function db_search(obj, st_year, st_month, st_day, fin_year, fin_month, fin_day) {
 
@@ -1648,7 +1853,45 @@ client.on("message", async msg => {
       return re;
     }
 
+    
+    async function db_money(st_year, st_month, st_day, fin_year, fin_month, fin_day) {
 
+      //if (obj.length >= 6) return
+      var con = await mysql.createConnection({
+        host: host,
+        user: usr,
+        password: mySecret,
+        database: db
+      });
+
+      await con.connect(function(err) {
+        if (err) {
+          console.log(err)
+          return
+        }
+        console.log("Connected to database!");
+      });
+      let quer = "SELECT CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00') AS `currentTime`,`bestprice` FROM `money` WHERE `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " " + "00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + "  " + " 23:59:59'";
+      console.log(quer)
+      //SELECT * FROM `prizes` WHERE `objName`='幽暗' AND `currentTime` BETWEEN '2021-10-21 00:00:00' AND '2021-10-22 23:59:59'
+      //INSERT INTO `prizes`( `objName`, `avgprize`, `bestprize`, `url`) VALUES ([value-2],[value-3],[value-4],[value-5])
+      //"SELECT " + "CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00') AS `currentTime` " + " FROM prizes"
+      let re = "empty";
+      await con.query(quer, async (err, result) => {
+        if (err) {
+          throw err
+        }
+        console.log(result)
+        const words = JSON.stringify(result).split("}");
+        console.log(words)
+        for (let i = 0; i < words.length; i++) {
+          msg.channel.send(words[i])
+        }
+      })
+      await con.end();
+      await console.log("connection done");
+      return re;
+    }
 
 
 
@@ -1771,7 +2014,88 @@ client.on("message", async msg => {
       await console.log("connection done");
       return re;
     }
+     async function chart_money(st_year, st_month, st_day, fin_year, fin_month, fin_day) {
 
+      //if (obj.length >= 6) return
+      var con = await mysql.createConnection({
+        host: host,
+        user: usr,
+        password: mySecret,
+        database: db
+      });
+
+      await con.connect(function(err) {
+        if (err) {
+          console.log(err)
+          return
+        }
+        console.log("Connected to database!");
+      });
+      let quer = "";
+
+      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)<32))||(st_year === fin_year && st_month === fin_month)) {
+        quer = "SELECT MAX(`bestprice`) as bestprice, DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `money` WHERE  `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
+      }
+      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year || st_month !== fin_month)) {
+        quer = "SELECT MAX(`bestprice`) as bestprice, MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `money` WHERE `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
+      }
+      console.log(quer)
+      //SELECT MONTH(`currentTime`), AVG(`avgprize`) FROM prizes WHERE `objName`='幽暗' GROUP BY MONTH(`currentTime`)
+      //SELECT * FROM `prizes` WHERE `objName`='幽暗' AND `currentTime` BETWEEN '2021-10-21 00:00:00' AND '2021-10-22 23:59:59'
+      //INSERT INTO `prizes`( `objName`, `avgprize`, `bestprize`, `url`) VALUES ([value-2],[value-3],[value-4],[value-5])
+      //"SELECT " + "CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00') AS `currentTime` " + " FROM prizes"
+      //SELECT `objName`,AVG(`avgprize`) as 'avgprice',AVG(`bestprize`) as 'avgprice'FROM `prizes` WHERE `objName`  ='幽暗' AND `currentTime` BETWEEN '2021-10-25 00:00:00' AND '2021-10-25   23:59:59'
+      //SELECT AVG(`bestprize`) as avg, DATE(`currentTime`) as date FROM `prizes` WHERE `objName` ='幽暗' GROUP BY DATE(`currentTime`)
+      //SELECT AVG(`avgprize`) as avg, DATE(`currentTime`) as date FROM `prizes` WHERE `objName` ='幽暗' AND `currentTime` BETWEEN '2021-10-23 00:00:00' AND '2021-10-24 23:59:59' GROUP BY DATE(`currentTime`)
+      let re = "empty";
+      let avg_price = [];
+      let avg_time = [];
+      await con.query(quer, async (err, result) => {
+        if (err) {
+          throw err
+        }
+        console.log(result)
+        const words = JSON.stringify(result).split("}");
+        console.log(words)
+
+        for (let i = 0; i < words.length; i++) {
+          if (words[i].includes("bestprice")) {
+            avg_price.push(parseInt(words[i].substring(words[i].search("\":") + 2, words[i].search("\"date"))))
+            //console.log(words[i].search("\":"))
+            //console.log(words[i].search("\"date") - words[i].search("\":"))
+            // console.log(avg_price)
+          }
+          if (words[i].includes("date")) {
+            avg_time.push(words[i].substring(words[i].search("date") + 7, words[i].search("T")))
+            //console.log( words[i].search("T"))
+            if( words[i].search("T")<0){
+              avg_time.pop();
+              avg_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date")+9))
+
+            }
+            //console.log(words[i].search("\":"))
+            //console.log(words[i].search("\"date") - words[i].search("\":"))
+            // console.log(avg_time)
+          }
+          // msg.channel.send(words[i])
+        }
+        
+        await drawmoney("幣值",avg_time, avg_price,true)
+      })
+      
+
+
+      //await drawchart(avg_time,best_price,avg_price)
+
+      //await drawchart(avg_time,best_price,avg_price);
+
+
+
+
+      await con.end();
+      await console.log("connection done");
+      return re;
+    }
 
 
     async function current_chart_search(obj, st_year, st_month, st_day, fin_year, fin_month, fin_day) {
@@ -1910,7 +2234,7 @@ function compareDecimals(a, b) {
   return a < b ? -1 : 1;
 }
 
-
+ 
 ////418076288625016834
 //418076288625016832
 
