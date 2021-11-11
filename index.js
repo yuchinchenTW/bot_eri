@@ -1,6 +1,7 @@
 
 //import fetch from 'node-fetch';
 "use strict";
+const keepAlive = require('./server');
 const { createCanvas, loadImage } = require('canvas')
 var Chart = require('chart.js');
 var TinyURL = require('tinyurl');
@@ -2270,6 +2271,8 @@ client.on('guildMemberRemove', member => {
   channel.send(goodbyeEmbed)
 
 })
+
+keepAlive()
 client.login(token);
 
 
