@@ -1592,6 +1592,12 @@ client.on("message", async msg => {
 
 
     }
+
+     function roundTofive(num) {
+    //return Number.parseFloat(num).toPrecision(5);
+    return (Math.floor(num*10000)/10000);
+    }
+
     if (msg.content === '!list' && msg.content.indexOf("l") == 1&&msging == true) {
       msg.reply("wait for it 搜尋中稍等");
 
@@ -1613,7 +1619,7 @@ client.on("message", async msg => {
       for(let k=0;k<arr_spl.length;k++){
         console.log(arr_spl[k])
       
-      let quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`avgprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 1) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`avgprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 1) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+      let quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`avgprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`avgprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
 
 
       await con.query(quer, async (err, result) => {
@@ -1628,7 +1634,12 @@ client.on("message", async msg => {
           
           let pars=words[i].substring(words[i].indexOf('P')+3,words[i].indexOf('P')+29);
           let re= parseFloat(pars);
-          if(re>1){msg.channel.send("平均成交價格:"+(re-1)*100+"% \u21C8")
+          //console.log(re)
+          //console.log(roundTofive(re))
+          // re = (roundTofive(re)-1)*100;
+          re = roundTofive(re);
+          
+          if(re>1){msg.channel.send("平均成交價格:"+((re-1)*100).toPrecision(4)+"% \u21C8")
           }
           if(re==1||Number.isNaN(re)==true){
             msg.channel.send("平均成交價格:0%"+" 沒有變化");
@@ -1636,14 +1647,16 @@ client.on("message", async msg => {
           
           
           if(re<1) {
-            msg.channel.send("平均成交價格:"+((1/re)-1)*100+"%  \u21CA");
+             re = roundTofive((1/re)-1);
+            //console.log(re)
+            msg.channel.send("平均成交價格:"+(re*100).toPrecision(4)+"%  \u21CA");
             
           }
 
         }
         
       })
-        quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`bestprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 1) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`bestprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 1) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+        quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`bestprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`bestprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
 
         await con.query(quer, async (err, result) => {
         if (err) {
@@ -1656,7 +1669,8 @@ client.on("message", async msg => {
           
           let pars=words[i].substring(words[i].indexOf('P')+3,words[i].indexOf('P')+29);
           let re= parseFloat(pars);
-          if(re>1){msg.channel.send("平均最佳成交價格:"+(re-1)*100+"% \u21C8")
+           re = roundTofive(re);
+          if(re>1){msg.channel.send("平均最佳成交價格:"+((re-1)*100).toPrecision(4)+"% \u21C8")
           }
          
           if(re==1||Number.isNaN(re)==true){
@@ -1665,7 +1679,8 @@ client.on("message", async msg => {
           
          
           if(re<1) {
-            msg.channel.send("平均最佳成交價格:"+((1/re)-1)*100+"%  \u21CA");
+            re = roundTofive((1/re)-1);
+            msg.channel.send("平均最佳成交價格:"+(re*100).toPrecision(4)+"%  \u21CA");
             
           }
 
@@ -1674,7 +1689,7 @@ client.on("message", async msg => {
       })
 
 
-      quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`avgprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 1) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`avgprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 1) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+      quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`avgprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`avgprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
 
         await con.query(quer, async (err, result) => {
         if (err) {
@@ -1687,7 +1702,8 @@ client.on("message", async msg => {
           
           let pars=words[i].substring(words[i].indexOf('P')+3,words[i].indexOf('P')+29);
           let re= parseFloat(pars);
-          if(re>1){msg.channel.send("平均未成交價格:"+(re-1)*100+"% \u21C8")
+           re = roundTofive(re);
+          if(re>1){msg.channel.send("平均未成交價格:"+((re-1)*100).toPrecision(4)+"% \u21C8")
           }
           if(re==1||Number.isNaN(re)==true){
             msg.channel.send("平均未成交價格:0%"+" 沒有變化");
@@ -1695,7 +1711,8 @@ client.on("message", async msg => {
           
           
           if(re<1) {
-            msg.channel.send("平均未成交價格:"+((1/re)-1)*100+"%  \u21CA");
+            re = roundTofive((1/re)-1);
+            msg.channel.send("平均未成交價格:"+(re*100).toPrecision(4)+"%  \u21CA");
             
           }
 
@@ -1704,7 +1721,7 @@ client.on("message", async msg => {
       })
 
 
-      quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`bestprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 1) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`bestprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 1) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+      quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`bestprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`bestprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
 
         await con.query(quer, async (err, result) => {
         if (err) {
@@ -1717,7 +1734,8 @@ client.on("message", async msg => {
           
           let pars=words[i].substring(words[i].indexOf('P')+3,words[i].indexOf('P')+29);
           let re= parseFloat(pars);
-          if(re>1){msg.channel.send("平均最佳未成交價格:"+(re-1)*100+"% \u21C8")
+          re = roundTofive(re);
+          if(re>1){msg.channel.send("平均最佳未成交價格:"+((re-1)*100).toPrecision(4)+"% \u21C8")
           }
           if(re==1||Number.isNaN(re)==true){
             msg.channel.send("平均最佳未成交價格:0%"+" 沒有變化");
@@ -1725,7 +1743,8 @@ client.on("message", async msg => {
           
           
           if(re<1) {
-            msg.channel.send("平均最佳未成交價格:"+((1/re)-1)*100+"%  \u21CA");
+            re = roundTofive((1/re)-1);
+            msg.channel.send("平均最佳未成交價格:"+(re*100).toPrecision(4)+"%  \u21CA");
             
           }
 
@@ -1741,7 +1760,7 @@ client.on("message", async msg => {
       
 
     }
-
+   
 
     if (msg.content === '!logout' && msg.content.indexOf("l") == 1) {
       //process.exit(1);
