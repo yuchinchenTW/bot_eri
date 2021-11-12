@@ -1164,6 +1164,8 @@ client.on("message", async msg => {
       msg.channel.send("---------------------------");
       msg.reply("指令沒有的請打  !!(物品名稱,最大金額,最小金額) ");
       msg.channel.send("---------------------------");
+      msg.reply("列出部分當日物品漲跌  !list");
+      msg.channel.send("---------------------------");
       msg.channel.send("以下查詢歷史價格 可查詢物件有限");
       msg.channel.send("可查詢物件:"+dblist);
       msg.channel.send("查詢歷史價格  history(物件,yy,mm,dd,yy,mm,dd) ");
