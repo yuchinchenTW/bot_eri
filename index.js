@@ -5,6 +5,7 @@ const keepAlive = require('./server');
 const { createCanvas, loadImage } = require('canvas')
 var Chart = require('chart.js');
 var TinyURL = require('tinyurl');
+var short = require('easy-short-url');
 const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
 var mysql = require('mysql');
 var makeShortUrl = require("@short-url/shorturl").makeShortUrl;
@@ -1072,13 +1073,22 @@ client.on("message", async msg => {
         },
       };
 
-      TinyURL.shorten(chartUrl, function(res, err) {
+     /* TinyURL.shorten(chartUrl, function(res, err) {
         if (err)
           console.log(err)
         console.log(res);
         msg.channel.send(res);
-      });
+      });**/
       await msg.channel.send({ embed: chartEmbed });
+
+      short.setProvider('is.gd');
+     
+      short.short(chartUrl, function (url, err) {
+          if (err) console.log(err)
+          console.log(url);
+          msg.channel.send(url);
+
+        });
       //await msg.reply(chartUrl)
 
 
