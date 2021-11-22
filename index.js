@@ -1073,13 +1073,13 @@ client.on("message", async msg => {
         },
       };
 
-     /* TinyURL.shorten(chartUrl, function(res, err) {
+      TinyURL.shorten(chartUrl, function(res, err) {
         if (err)
           console.log(err)
         console.log(res);
         msg.channel.send(res);
-      });**/
-      await msg.channel.send({ embed: chartEmbed });
+      });
+      //await msg.channel.send({ embed: chartEmbed });
 
       short.setProvider('is.gd');
      
@@ -1089,7 +1089,7 @@ client.on("message", async msg => {
           msg.channel.send(url);
 
         });
-      //await msg.reply(chartUrl)
+      await msg.reply(chartUrl)
 
 
       if (count === 0) {
