@@ -454,8 +454,8 @@ client.on("message", async msg => {
       search = true;
     } else if (msg.content === "輪迴") {
       item = "輪迴";
-      maxrange = 100000;
-      minrange = 30000;
+      maxrange = 80000;
+      minrange = 25000;
       check = "輪迴";
       search = true;
     } else if (msg.content === "武公寶珠") {
