@@ -2433,9 +2433,11 @@ client.on('guildMemberAdd', member => {
   welcomeEmbed.setTitle('**' + member.user.username + '** is now Among Us other **' + member.guild.memberCount + '** people'+"請不要在這裡打指令去機器人頻道打")
   welcomeEmbed.setImage('https://cdn.mos.cms.futurecdn.net/93GAa4wm3z4HbenzLbxWeQ-650-80.jpg.webp')
   const channel = member.guild.channels.cache.get('901046032048222288');
-  if (!channel) return;
+  //if (!channel) return;
 
   channel.send(welcomeEmbed)
+  channel.send("<@"+member.user+">")
+  channel.send("<#913297957879697419>")
 })
 
 client.on('guildMemberRemove', member => {
