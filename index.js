@@ -534,8 +534,8 @@ client.on("message", async msg => {
       search = true;
     } else if (msg.content === "MX131") {
       item = "MX131";
-      maxrange = 5000;
-      minrange = 1000;
+      maxrange = 2000;
+      minrange = 300;
       check = "MX131";
       search = true;
     } else if (msg.content === "黑翼") {
