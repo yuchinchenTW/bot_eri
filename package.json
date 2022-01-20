@@ -30,7 +30,7 @@
   "description": "免責聲明 一切下載及使用軟件時均被視為已經仔細閱讀並完全同意以下條款：",
   "version": "1.0.0",
   "devDependencies": {
-    "node": "^16.13.0"
+    "node": "^12.22.6"
   },
   "repository": {
     "type": "git",
