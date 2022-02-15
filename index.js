@@ -18,7 +18,7 @@ let {
 const Discord = require("discord.js");
 //"iopjklnm44@"
 const {
-  input,dblist
+  input, dblist
 } = require("./input.json")
 
 const {
@@ -684,8 +684,8 @@ client.on("message", async msg => {
       search = true;
     } else if (msg.content === "音樂蔥") {
       item = "音樂蔥";
-      maxrange = 7000;
-      minrange = 2000;
+      maxrange = 18000;
+      minrange = 3000;
       check = "音樂蔥";
       search = true;
     } else if (msg.content === "幽暗") {
@@ -922,6 +922,12 @@ client.on("message", async msg => {
       minrange = 20;
       check = "15星";
       search = true;
+    } else if (msg.content === "凝聚的戒指") {
+      item = "凝聚的戒指";
+      maxrange = 10000;
+      minrange = 3000;
+      check = "凝聚的戒指";
+      search = true;
     } else if (msg.content.includes("!!(") && msg.content.includes("物品名稱") === false) {
       msg.content = msg.content.replace("!!", "");
       msg.content = msg.content.replace("(", "");
@@ -1082,13 +1088,13 @@ client.on("message", async msg => {
       //await msg.channel.send({ embed: chartEmbed });
 
       short.setProvider('is.gd');
-     
-      short.short(chartUrl, function (url, err) {
-          if (err) console.log(err)
-          console.log(url);
-          msg.channel.send(url);
 
-        });
+      short.short(chartUrl, function(url, err) {
+        if (err) console.log(err)
+        console.log(url);
+        msg.channel.send(url);
+
+      });
       await msg.reply(chartUrl)
 
 
@@ -1152,11 +1158,11 @@ client.on("message", async msg => {
       console.log(arr)
       result += "最高可能價格:\n";
       for (var i = 0; i < 10; i++) {
-        if(arr[i]<=3000){
-          if (arr.length > 6 && arr[i] / arr[i + 1] < 2){
-          result += "1:" + arr[i] + "萬\n";
+        if (arr[i] <= 3000) {
+          if (arr.length > 6 && arr[i] / arr[i + 1] < 2) {
+            result += "1:" + arr[i] + "萬\n";
           }
-          }
+        }
       }
       msging = true;
       await msg.reply(result);
@@ -1177,7 +1183,7 @@ client.on("message", async msg => {
       msg.reply("列出部分當日物品漲跌  !list");
       msg.channel.send("---------------------------");
       msg.channel.send("以下查詢歷史價格 可查詢物件有限");
-      msg.channel.send("可查詢物件:"+dblist);
+      msg.channel.send("可查詢物件:" + dblist);
       msg.channel.send("查詢歷史價格  history(物件,yy,mm,dd,yy,mm,dd) ");
       msg.channel.send("查詢歷史成交價格圖表  hischart(物件,yy,mm,dd,yy,mm,dd) ");
       msg.channel.send("查詢歷史未成交價格圖表  currentchart(物件,yy,mm,dd,yy,mm,dd) ");
@@ -1338,7 +1344,7 @@ client.on("message", async msg => {
       msg.channel.send(embed);
     }
 
-     if (msg.content.includes("hismone(") && msging === true && !msg.content.includes("錯誤") && msg.content.indexOf("h") == 0) {
+    if (msg.content.includes("hismone(") && msging === true && !msg.content.includes("錯誤") && msg.content.indexOf("h") == 0) {
       msg.reply("wait for it 搜尋中稍等");
 
       let endindex = msg.content.indexOf(")");
@@ -1499,7 +1505,7 @@ client.on("message", async msg => {
 
     }
 
-      if (msg.content.includes("hismoney(") && msging === true && !msg.content.includes("錯誤") && msg.content.indexOf("h") == 0) {
+    if (msg.content.includes("hismoney(") && msging === true && !msg.content.includes("錯誤") && msg.content.indexOf("h") == 0) {
       msg.reply("wait for it 搜尋中稍等");
 
       let endindex = msg.content.indexOf(")");
@@ -1510,7 +1516,7 @@ client.on("message", async msg => {
         msg.reply("錯誤格式 hismoney(yy,mm,dd,yy,mm,dd)");
         return;
       }
-    
+
       if (parseInt(spli[0]) < 2021) {
         msg.reply("起始必須大於2021年");
         return;
@@ -1603,12 +1609,12 @@ client.on("message", async msg => {
 
     }
 
-     function roundTofive(num) {
-    //return Number.parseFloat(num).toPrecision(5);
-    return (Math.floor(num*10000)/10000);
+    function roundTofive(num) {
+      //return Number.parseFloat(num).toPrecision(5);
+      return (Math.floor(num * 10000) / 10000);
     }
 
-    if (msg.content === '!list' && msg.content.indexOf("l") == 1&&msging == true) {
+    if (msg.content === '!list' && msg.content.indexOf("l") == 1 && msging == true) {
       msg.reply("wait for it 搜尋中稍等");
 
       var con = await mysql.createConnection({
@@ -1624,153 +1630,157 @@ client.on("message", async msg => {
         }
         console.log("Connected to database!");
       });
-     
-      let arr_spl=dblist.split(',');
-      for(let k=0;k<arr_spl.length;k++){
+
+      let arr_spl = dblist.split(',');
+      for (let k = 0; k < arr_spl.length; k++) {
         console.log(arr_spl[k])
-      
-      let quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`avgprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`avgprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+
+        let quer = "SELECT ( SELECT  AVG FROM( SELECT AVG(`avgprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `prizes` WHERE `objName` = '" + arr_spl[k] + "' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`avgprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `prizes` WHERE `objName` = '" + arr_spl[k] + "' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
 
 
-      await con.query(quer, async (err, result) => {
-        if (err) {
-          throw err
-        }
-        msg.channel.send("--"+arr_spl[k]);
-        //console.log(result)
-        const words = JSON.stringify(result).split("}");
-        console.log(words)
-        for (let i = 0; i < words.length-1; i++) {
-          
-          let pars=words[i].substring(words[i].indexOf('P')+3,words[i].indexOf('P')+29);
-          let re= parseFloat(pars);
-          //console.log(re)
-          //console.log(roundTofive(re))
-          // re = (roundTofive(re)-1)*100;
-          re = roundTofive(re);
-          
-          if(re>1){msg.channel.send("平均成交價格:"+((re-1)*100).toPrecision(4)+"% \u21C8")
+        await con.query(quer, async (err, result) => {
+          if (err) {
+            throw err
           }
-          if(re==1||Number.isNaN(re)==true){
-            msg.channel.send("平均成交價格:0%"+" 沒有變化");
-          }
-          
-          
-          if(re<1) {
-             re = roundTofive((1/re)-1);
+          msg.channel.send("--" + arr_spl[k]);
+          //console.log(result)
+          const words = JSON.stringify(result).split("}");
+          console.log(words)
+          for (let i = 0; i < words.length - 1; i++) {
+
+            let pars = words[i].substring(words[i].indexOf('P') + 3, words[i].indexOf('P') + 29);
+            let re = parseFloat(pars);
             //console.log(re)
-            msg.channel.send("平均成交價格:"+(re*100).toPrecision(4)+"%  \u21CA");
-            
+            //console.log(roundTofive(re))
+            // re = (roundTofive(re)-1)*100;
+            re = roundTofive(re);
+
+            if (re > 1) {
+              msg.channel.send("平均成交價格:" + ((re - 1) * 100).toPrecision(4) + "% \u21C8")
+            }
+            if (re == 1 || Number.isNaN(re) == true) {
+              msg.channel.send("平均成交價格:0%" + " 沒有變化");
+            }
+
+
+            if (re < 1) {
+              re = roundTofive((1 / re) - 1);
+              //console.log(re)
+              msg.channel.send("平均成交價格:" + (re * 100).toPrecision(4) + "%  \u21CA");
+
+            }
+
           }
 
-        }
-        
-      })
-        quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`bestprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`bestprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+        })
+        quer = "SELECT ( SELECT  AVG FROM( SELECT AVG(`bestprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `prizes` WHERE `objName` = '" + arr_spl[k] + "' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`bestprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `prizes` WHERE `objName` = '" + arr_spl[k] + "' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
 
         await con.query(quer, async (err, result) => {
-        if (err) {
-          throw err
-        }
-        //console.log(result)
-        const words = JSON.stringify(result).split("}");
-        console.log(words)
-        for (let i = 0; i < words.length-1; i++) {
-          
-          let pars=words[i].substring(words[i].indexOf('P')+3,words[i].indexOf('P')+29);
-          let re= parseFloat(pars);
-           re = roundTofive(re);
-          if(re>1){msg.channel.send("平均最佳成交價格:"+((re-1)*100).toPrecision(4)+"% \u21C8")
+          if (err) {
+            throw err
           }
-         
-          if(re==1||Number.isNaN(re)==true){
-            msg.channel.send("平均最佳成交價格:0%"+" 沒有變化");
-          }
-          
-         
-          if(re<1) {
-            re = roundTofive((1/re)-1);
-            msg.channel.send("平均最佳成交價格:"+(re*100).toPrecision(4)+"%  \u21CA");
-            
-          }
+          //console.log(result)
+          const words = JSON.stringify(result).split("}");
+          console.log(words)
+          for (let i = 0; i < words.length - 1; i++) {
 
-        }
-        
-      })
+            let pars = words[i].substring(words[i].indexOf('P') + 3, words[i].indexOf('P') + 29);
+            let re = parseFloat(pars);
+            re = roundTofive(re);
+            if (re > 1) {
+              msg.channel.send("平均最佳成交價格:" + ((re - 1) * 100).toPrecision(4) + "% \u21C8")
+            }
+
+            if (re == 1 || Number.isNaN(re) == true) {
+              msg.channel.send("平均最佳成交價格:0%" + " 沒有變化");
+            }
 
 
-      quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`avgprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`avgprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+            if (re < 1) {
+              re = roundTofive((1 / re) - 1);
+              msg.channel.send("平均最佳成交價格:" + (re * 100).toPrecision(4) + "%  \u21CA");
 
-        await con.query(quer, async (err, result) => {
-        if (err) {
-          throw err
-        }
-        //console.log(result)
-        const words = JSON.stringify(result).split("}");
-        console.log(words)
-        for (let i = 0; i < words.length-1; i++) {
-          
-          let pars=words[i].substring(words[i].indexOf('P')+3,words[i].indexOf('P')+29);
-          let re= parseFloat(pars);
-           re = roundTofive(re);
-          if(re>1){msg.channel.send("平均未成交價格:"+((re-1)*100).toPrecision(4)+"% \u21C8")
-          }
-          if(re==1||Number.isNaN(re)==true){
-            msg.channel.send("平均未成交價格:0%"+" 沒有變化");
-          }
-          
-          
-          if(re<1) {
-            re = roundTofive((1/re)-1);
-            msg.channel.send("平均未成交價格:"+(re*100).toPrecision(4)+"%  \u21CA");
-            
+            }
+
           }
 
-        }
-        
-      })
+        })
 
 
-      quer="SELECT ( SELECT  AVG FROM( SELECT AVG(`bestprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`bestprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `current_prizes` WHERE `objName` = '"+arr_spl[k]+"' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+        quer = "SELECT ( SELECT  AVG FROM( SELECT AVG(`avgprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `current_prizes` WHERE `objName` = '" + arr_spl[k] + "' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`avgprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `current_prizes` WHERE `objName` = '" + arr_spl[k] + "' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
 
         await con.query(quer, async (err, result) => {
-        if (err) {
-          throw err
-        }
-        //console.log(result)
-        const words = JSON.stringify(result).split("}");
-        console.log(words)
-        for (let i = 0; i < words.length-1; i++) {
-          
-          let pars=words[i].substring(words[i].indexOf('P')+3,words[i].indexOf('P')+29);
-          let re= parseFloat(pars);
-          re = roundTofive(re);
-          if(re>1){msg.channel.send("平均最佳未成交價格:"+((re-1)*100).toPrecision(4)+"% \u21C8")
+          if (err) {
+            throw err
           }
-          if(re==1||Number.isNaN(re)==true){
-            msg.channel.send("平均最佳未成交價格:0%"+" 沒有變化");
-          }
-          
-          
-          if(re<1) {
-            re = roundTofive((1/re)-1);
-            msg.channel.send("平均最佳未成交價格:"+(re*100).toPrecision(4)+"%  \u21CA");
-            
+          //console.log(result)
+          const words = JSON.stringify(result).split("}");
+          console.log(words)
+          for (let i = 0; i < words.length - 1; i++) {
+
+            let pars = words[i].substring(words[i].indexOf('P') + 3, words[i].indexOf('P') + 29);
+            let re = parseFloat(pars);
+            re = roundTofive(re);
+            if (re > 1) {
+              msg.channel.send("平均未成交價格:" + ((re - 1) * 100).toPrecision(4) + "% \u21C8")
+            }
+            if (re == 1 || Number.isNaN(re) == true) {
+              msg.channel.send("平均未成交價格:0%" + " 沒有變化");
+            }
+
+
+            if (re < 1) {
+              re = roundTofive((1 / re) - 1);
+              msg.channel.send("平均未成交價格:" + (re * 100).toPrecision(4) + "%  \u21CA");
+
+            }
+
           }
 
-        }
-        
-      })
+        })
+
+
+        quer = "SELECT ( SELECT  AVG FROM( SELECT AVG(`bestprize`) AS AVG, DATE( CONVERT_TZ(  `currentTime`,  @@session.time_zone,  '+08:00'  ) ) AS DATE  FROM `current_prizes` WHERE `objName` = '" + arr_spl[k] + "' AND `currentTime` BETWEEN  SUBDATE(NOW(), 2) AND NOW()  GROUP BY DATE(  CONVERT_TZ( `currentTime`,  @@session.time_zone,  '+08:00'  )  )) total WHERE DATE = DATE(NOW())) /( SELECT  AVG FROM (SELECT  AVG(`bestprize`) AS AVG, DATE(  CONVERT_TZ(  `currentTime`, @@session.time_zone, '+08:00' )) AS DATE FROM `current_prizes` WHERE `objName` = '" + arr_spl[k] + "' AND `currentTime` BETWEEN   SUBDATE(NOW(), 2) AND NOW()  GROUP BY  DATE(  CONVERT_TZ( `currentTime`, @@session.time_zone, '+08:00' ) )) total  WHERE  DATE = DATE(SUBDATE(NOW(), 1))) AS TEMP";
+
+        await con.query(quer, async (err, result) => {
+          if (err) {
+            throw err
+          }
+          //console.log(result)
+          const words = JSON.stringify(result).split("}");
+          console.log(words)
+          for (let i = 0; i < words.length - 1; i++) {
+
+            let pars = words[i].substring(words[i].indexOf('P') + 3, words[i].indexOf('P') + 29);
+            let re = parseFloat(pars);
+            re = roundTofive(re);
+            if (re > 1) {
+              msg.channel.send("平均最佳未成交價格:" + ((re - 1) * 100).toPrecision(4) + "% \u21C8")
+            }
+            if (re == 1 || Number.isNaN(re) == true) {
+              msg.channel.send("平均最佳未成交價格:0%" + " 沒有變化");
+            }
+
+
+            if (re < 1) {
+              re = roundTofive((1 / re) - 1);
+              msg.channel.send("平均最佳未成交價格:" + (re * 100).toPrecision(4) + "%  \u21CA");
+
+            }
+
+          }
+
+        })
 
 
       }//forloop
       await con.end();
       await console.log("connection done");
       msging = true;
-      
+
 
     }
-   
+
 
     if (msg.content === '!logout' && msg.content.indexOf("l") == 1) {
       //process.exit(1);
@@ -1778,14 +1788,14 @@ client.on("message", async msg => {
         .then(msg => client.destroy())
 
         .then(function() {
-         process.exit(1);
+          process.exit(1);
           return client.login(token)
         });
 
 
     }
 
-    async function drawchart(obj,dates, best, avg,deal) {
+    async function drawchart(obj, dates, best, avg, deal) {
       const canvasRenderService = new ChartJSNodeCanvas({
         width: 800, height: 600, chartCallback: (ChartJS) => {
           /** Add plugins here **/
@@ -1798,14 +1808,14 @@ client.on("message", async msg => {
       console.log(dates)
       console.log(best)
       console.log(avg)
-      let str_best="";
-      let str_avg="";
-      if(deal==true){
-            str_best="歷史平均最佳成交價格";
-            str_avg="歷史平均成交價格";
-      }else if(deal == false){
-            str_best="歷史平均最佳未成交價格";
-            str_avg="歷史平均未成交價格";
+      let str_best = "";
+      let str_avg = "";
+      if (deal == true) {
+        str_best = "歷史平均最佳成交價格";
+        str_avg = "歷史平均成交價格";
+      } else if (deal == false) {
+        str_best = "歷史平均最佳未成交價格";
+        str_avg = "歷史平均未成交價格";
 
       }
       const configuration = {
@@ -1814,7 +1824,7 @@ client.on("message", async msg => {
           labels: dates,
           datasets: [
             {
-              label: obj+str_best,
+              label: obj + str_best,
               data: best,
               //backgroundColor: "rgba(238, 238, 87, 0.3)",
               borderColor: "rgba(238, 238,87, 0.3)",
@@ -1824,9 +1834,9 @@ client.on("message", async msg => {
             },
 
             {
-              label: obj+str_avg,
+              label: obj + str_avg,
               data: avg,
-             // backgroundColor: "rgba(128, 173, 219, 0.3)",
+              // backgroundColor: "rgba(128, 173, 219, 0.3)",
               borderColor: "rgba(128, 173, 219, 0.3)",
               borderWidth: 5,
               fill: true,
@@ -1835,7 +1845,7 @@ client.on("message", async msg => {
           ]
         },
         options: {
-          
+
           scales: {
             xAxes: {
               grid: {
@@ -1843,12 +1853,12 @@ client.on("message", async msg => {
               },
               ticks: {
                 color: "green",
-                 font: {
-                                    size: 12,
-                                    family:'vazir'
-                        }
+                font: {
+                  size: 12,
+                  family: 'vazir'
+                }
               }
-              
+
             },
             yAxes: {
               grid: {
@@ -1857,33 +1867,33 @@ client.on("message", async msg => {
               },
               ticks: {
                 color: "green",
-                 font: {
-                                    size: 16,
-                                    family:'vazir'
-                        }
+                font: {
+                  size: 16,
+                  family: 'vazir'
+                }
               }
             }
           },
           plugins: {
             datalabels: {
-                anchor: 'end',
-        align: 'left',
-                formatter: Math.round,
-                color: "red",
-                  font: {
-          
-                    weight: 'bold'
-                  }
+              anchor: 'end',
+              align: 'left',
+              formatter: Math.round,
+              color: "red",
+              font: {
+
+                weight: 'bold'
+              }
             },
-             legend: {
+            legend: {
               labels: {
-                  color: "green",  // not 'fontColor:' anymore
-          // fontSize: 18  // not 'fontSize:' anymore
-                  font: {
-                    size: 20 // 'size' now within object 'font {}'
-                  }
+                color: "green",  // not 'fontColor:' anymore
+                // fontSize: 18  // not 'fontSize:' anymore
+                font: {
+                  size: 20 // 'size' now within object 'font {}'
                 }
               }
+            }
           }
 
         }
@@ -1897,7 +1907,7 @@ client.on("message", async msg => {
       msg.channel.send(embed);
     }
 
-       async function drawmoney(obj,dates, best,deal) {
+    async function drawmoney(obj, dates, best, deal) {
       const canvasRenderService = new ChartJSNodeCanvas({
         width: 800, height: 600, chartCallback: (ChartJS) => {
           /** Add plugins here **/
@@ -1910,14 +1920,14 @@ client.on("message", async msg => {
       console.log(dates)
       console.log(best)
       //console.log(avg)
-      let str_best="";
-      let str_avg="";
-      if(deal==true){
-            str_best="歷史平均最佳成交價格";
-            str_avg="歷史平均成交價格";
-      }else if(deal == false){
-            str_best="歷史平均最佳未成交價格";
-            str_avg="歷史平均未成交價格";
+      let str_best = "";
+      let str_avg = "";
+      if (deal == true) {
+        str_best = "歷史平均最佳成交價格";
+        str_avg = "歷史平均成交價格";
+      } else if (deal == false) {
+        str_best = "歷史平均最佳未成交價格";
+        str_avg = "歷史平均未成交價格";
 
       }
       const configuration = {
@@ -1926,7 +1936,7 @@ client.on("message", async msg => {
           labels: dates,
           datasets: [
             {
-              label: obj+str_best,
+              label: obj + str_best,
               data: best,
               //backgroundColor: "rgba(238, 238, 87, 0.3)",
               borderColor: "rgba(238, 238,87, 0.3)",
@@ -1937,7 +1947,7 @@ client.on("message", async msg => {
           ]
         },
         options: {
-          
+
           scales: {
             xAxes: {
               grid: {
@@ -1945,12 +1955,12 @@ client.on("message", async msg => {
               },
               ticks: {
                 color: "green",
-                 font: {
-                                    size: 14,
-                                    family:'vazir'
-                        }
+                font: {
+                  size: 14,
+                  family: 'vazir'
+                }
               }
-              
+
             },
             yAxes: {
               grid: {
@@ -1959,33 +1969,33 @@ client.on("message", async msg => {
               },
               ticks: {
                 color: "green",
-                 font: {
-                                    size: 16,
-                                    family:'vazir'
-                        }
+                font: {
+                  size: 16,
+                  family: 'vazir'
+                }
               }
             }
           },
           plugins: {
             datalabels: {
-                anchor: 'end',
-        align: 'left',
-                formatter: Math.round,
-                color: "red",
-                  font: {
-                    size: 19,
-                    weight: 'bold'
-                  }
+              anchor: 'end',
+              align: 'left',
+              formatter: Math.round,
+              color: "red",
+              font: {
+                size: 19,
+                weight: 'bold'
+              }
             },
-             legend: {
+            legend: {
               labels: {
-                  color: "green",  // not 'fontColor:' anymore
-          // fontSize: 18  // not 'fontSize:' anymore
-                  font: {
-                    size: 20 // 'size' now within object 'font {}'
-                  }
+                color: "green",  // not 'fontColor:' anymore
+                // fontSize: 18  // not 'fontSize:' anymore
+                font: {
+                  size: 20 // 'size' now within object 'font {}'
                 }
               }
+            }
           }
 
         }
@@ -2039,7 +2049,7 @@ client.on("message", async msg => {
       return re;
     }
 
-    
+
     async function db_money(st_year, st_month, st_day, fin_year, fin_month, fin_day) {
 
       //if (obj.length >= 6) return
@@ -2100,10 +2110,10 @@ client.on("message", async msg => {
       });
       let quer = "";
 
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)<32))||(st_year === fin_year && st_month === fin_month)) {
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) < 32)) || (st_year === fin_year && st_month === fin_month)) {
         quer = "SELECT AVG(`avgprize`) as avg, DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year || st_month !== fin_month)) {
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) >= 32)) && (st_year !== fin_year || st_month !== fin_month)) {
         quer = "SELECT AVG(`avgprize`) as avg, MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
       console.log(quer)
@@ -2135,9 +2145,9 @@ client.on("message", async msg => {
           if (words[i].includes("date")) {
             avg_time.push(words[i].substring(words[i].search("date") + 7, words[i].search("T")))
             //console.log( words[i].search("T"))
-            if( words[i].search("T")<0){
+            if (words[i].search("T") < 0) {
               avg_time.pop();
-              avg_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date")+9))
+              avg_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date") + 9))
 
             }
             //console.log(words[i].search("\":"))
@@ -2150,10 +2160,10 @@ client.on("message", async msg => {
       let best_price = [];
       let best_time = [];
 
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)<32))||(st_year === fin_year && st_month === fin_month)){
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) < 32)) || (st_year === fin_year && st_month === fin_month)) {
         quer = "SELECT AVG(`bestprize`) as avg, DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year || st_month !== fin_month)) {
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) >= 32)) && (st_year !== fin_year || st_month !== fin_month)) {
         quer = "SELECT AVG(`bestprize`) as avg, MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
       console.log(quer)
@@ -2175,10 +2185,10 @@ client.on("message", async msg => {
           }
           if (words[i].includes("date")) {
             best_time.push(words[i].substring(words[i].search("date") + 7, words[i].search("T")))
-            if( words[i].search("T")<0){
+            if (words[i].search("T") < 0) {
               best_time.pop();
-              best_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date")+9))
-              
+              best_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date") + 9))
+
             }
             //console.log(words[i].search("\":"))
             //console.log(words[i].search("\"date") - words[i].search("\":"))
@@ -2186,7 +2196,7 @@ client.on("message", async msg => {
           }
           // msg.channel.send(words[i])
         }
-        await drawchart(obj,avg_time, best_price, avg_price,true)
+        await drawchart(obj, avg_time, best_price, avg_price, true)
       })
 
       //await drawchart(avg_time,best_price,avg_price)
@@ -2200,7 +2210,7 @@ client.on("message", async msg => {
       await console.log("connection done");
       return re;
     }
-     async function chart_money(st_year, st_month, st_day, fin_year, fin_month, fin_day) {
+    async function chart_money(st_year, st_month, st_day, fin_year, fin_month, fin_day) {
 
       //if (obj.length >= 6) return
       var con = await mysql.createConnection({
@@ -2219,10 +2229,10 @@ client.on("message", async msg => {
       });
       let quer = "";
 
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)<32))||(st_year === fin_year && st_month === fin_month)) {
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) < 32)) || (st_year === fin_year && st_month === fin_month)) {
         quer = "SELECT MAX(`bestprice`) as bestprice, DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `money` WHERE  `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year || st_month !== fin_month)) {
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) >= 32)) && (st_year !== fin_year || st_month !== fin_month)) {
         quer = "SELECT MAX(`bestprice`) as bestprice, MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `money` WHERE `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
       console.log(quer)
@@ -2254,9 +2264,9 @@ client.on("message", async msg => {
           if (words[i].includes("date")) {
             avg_time.push(words[i].substring(words[i].search("date") + 7, words[i].search("T")))
             //console.log( words[i].search("T"))
-            if( words[i].search("T")<0){
+            if (words[i].search("T") < 0) {
               avg_time.pop();
-              avg_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date")+9))
+              avg_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date") + 9))
 
             }
             //console.log(words[i].search("\":"))
@@ -2265,10 +2275,10 @@ client.on("message", async msg => {
           }
           // msg.channel.send(words[i])
         }
-        
-        await drawmoney("幣值",avg_time, avg_price,true)
+
+        await drawmoney("幣值", avg_time, avg_price, true)
       })
-      
+
 
 
       //await drawchart(avg_time,best_price,avg_price)
@@ -2303,10 +2313,10 @@ client.on("message", async msg => {
       });
       let quer = "";
 
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)<32))||(st_year === fin_year && st_month === fin_month)) {
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) < 32)) || (st_year === fin_year && st_month === fin_month)) {
         quer = "SELECT AVG(`avgprize`) as avg, DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `current_prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year || st_month !== fin_month)) {
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) >= 32)) && (st_year !== fin_year || st_month !== fin_month)) {
         quer = "SELECT AVG(`avgprize`) as avg, MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `current_prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
       console.log(quer)
@@ -2338,9 +2348,9 @@ client.on("message", async msg => {
           if (words[i].includes("date")) {
             avg_time.push(words[i].substring(words[i].search("date") + 7, words[i].search("T")))
             //console.log( words[i].search("T"))
-            if( words[i].search("T")<0){
+            if (words[i].search("T") < 0) {
               avg_time.pop();
-              avg_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date")+9))
+              avg_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date") + 9))
 
             }
             //console.log(words[i].search("\":"))
@@ -2353,10 +2363,10 @@ client.on("message", async msg => {
       let best_price = [];
       let best_time = [];
 
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)<32))||(st_year === fin_year && st_month === fin_month)) {
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) < 32)) || (st_year === fin_year && st_month === fin_month)) {
         quer = "SELECT AVG(`bestprize`) as avg, DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `current_prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY DATE(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
-      if (((st_month !== fin_month)&&(31-parseInt(st_day)+parseInt(fin_day)>=32))&&(st_year !== fin_year || st_month !== fin_month)){
+      if (((st_month !== fin_month) && (31 - parseInt(st_day) + parseInt(fin_day) >= 32)) && (st_year !== fin_year || st_month !== fin_month)) {
         quer = "SELECT AVG(`bestprize`) as avg, MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00')) as date FROM `current_prizes` WHERE `objName` ='" + obj + "' AND `currentTime` BETWEEN '" + st_year + "-" + st_month + "-" + st_day + " 00:00:00' AND '" + fin_year + "-" + fin_month + "-" + fin_day + " 23:59:59' GROUP BY MONTH(CONVERT_TZ(`currentTime`, @@session.time_zone, '+08:00'))"
       }
       console.log(quer)
@@ -2378,10 +2388,10 @@ client.on("message", async msg => {
           }
           if (words[i].includes("date")) {
             best_time.push(words[i].substring(words[i].search("date") + 7, words[i].search("T")))
-            if( words[i].search("T")<0){
+            if (words[i].search("T") < 0) {
               best_time.pop();
-              best_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date")+9))
-              
+              best_time.push(words[i].substring(words[i].search("date") + 6, words[i].search("date") + 9))
+
             }
             //console.log(words[i].search("\":"))
             //console.log(words[i].search("\"date") - words[i].search("\":"))
@@ -2389,7 +2399,7 @@ client.on("message", async msg => {
           }
           // msg.channel.send(words[i])
         }
-        await drawchart(obj,avg_time, best_price, avg_price,false)
+        await drawchart(obj, avg_time, best_price, avg_price, false)
       })
 
       //await drawchart(avg_time,best_price,avg_price)
@@ -2420,7 +2430,7 @@ function compareDecimals(a, b) {
   return a < b ? -1 : 1;
 }
 
- 
+
 ////418076288625016834
 //418076288625016832
 
@@ -2430,13 +2440,13 @@ client.on('guildMemberAdd', member => {
   const welcomeEmbed = new Discord.MessageEmbed()
 
   welcomeEmbed.setColor('#5cf000')
-  welcomeEmbed.setTitle('**' + member.user.username + '** is now Among Us other **' + member.guild.memberCount + '** people'+"請不要在這裡打指令去機器人頻道打")
+  welcomeEmbed.setTitle('**' + member.user.username + '** is now Among Us other **' + member.guild.memberCount + '** people' + "請不要在這裡打指令去機器人頻道打")
   welcomeEmbed.setImage('https://cdn.mos.cms.futurecdn.net/93GAa4wm3z4HbenzLbxWeQ-650-80.jpg.webp')
   const channel = member.guild.channels.cache.get('901046032048222288');
   //if (!channel) return;
 
   channel.send(welcomeEmbed)
-  channel.send("<@"+member.user+">")
+  channel.send("<@" + member.user + ">")
   channel.send("<#913297957879697419>")
 })
 
