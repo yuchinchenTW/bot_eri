@@ -26,7 +26,7 @@ const {
 } = process.env.DISCORD_TOKEN // use the require method
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS]
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
 });
 const mySecret = process.env['password'];
 
@@ -70,9 +70,11 @@ client.on("ready", () => {
 
 
 client.on("message", async msg => {
+  
   if (msg.channel.id === "418076288625016834" ||
     msg.channel.id === "418076288625016834" ||
-    msg.channel.id === "902027471078174820") {
+    msg.channel.id === "902027471078174820" ||
+     msg.channel.id === "884774098234916864") {
     let item = "";
     let section = 0;
     let blank = 0;
@@ -2041,7 +2043,13 @@ client.on("message", async msg => {
         const words = JSON.stringify(result).split("}");
         console.log(words)
         for (let i = 0; i < words.length; i++) {
-          msg.channel.send(words[i])
+          //
+          if (i>6){
+            i+=words.length;
+            msg.reply("由於輸入時間距過長 中斷搜尋")
+          }
+          msg.reply(words[i])
+         // msg.channel.send(words[i])
         }
       })
       await con.end();
