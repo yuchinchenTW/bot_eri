@@ -74,7 +74,8 @@ client.on("message", async msg => {
   if (msg.channel.id === "418076288625016834" ||
     msg.channel.id === "418076288625016834" ||
     msg.channel.id === "902027471078174820" ||
-     msg.channel.id === "884774098234916864") {
+     msg.channel.id === "884774098234916864"||
+     msg.channel.id === "990843875709034528") {
     let item = "";
     let section = 0;
     let blank = 0;
@@ -842,7 +843,7 @@ client.on("message", async msg => {
       search = true;
     } else if (msg.content === "覺醒刀片") {
       item = "覺醒刀片";
-      maxrange = 30000;
+      maxrange = 50000;
       minrange = 10000;
       check = "覺醒刀片";
       search = true;
