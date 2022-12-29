@@ -1,6 +1,9 @@
 
 //import fetch from 'node-fetch';
 "use strict";
+const { MongoClient } = require('mongodb');
+const mongo_pass = process.env['mongopassword']
+const uri = "mongodb+srv://newuser-48:" + mongo_pass + "@dbbot.uqz32.mongodb.net/bot";
 const keepAlive = require('./server');
 const { createCanvas, loadImage } = require('canvas')
 var Chart = require('chart.js');
@@ -70,12 +73,12 @@ client.on("ready", () => {
 
 
 client.on("message", async msg => {
-  
+
   if (msg.channel.id === "418076288625016834" ||
     msg.channel.id === "418076288625016834" ||
     msg.channel.id === "902027471078174820" ||
-     msg.channel.id === "884774098234916864"||
-     msg.channel.id === "990843875709034528") {
+    msg.channel.id === "884774098234916864" ||
+    msg.channel.id === "990843875709034528") {
     let item = "";
     let section = 0;
     let blank = 0;
@@ -1551,6 +1554,7 @@ client.on("message", async msg => {
         return;
       }
       msg.reply("mute my self");
+      await chart_mongo_money(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5]);
       await chart_money(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5]);
       msging = true;
 
@@ -2045,12 +2049,12 @@ client.on("message", async msg => {
         console.log(words)
         for (let i = 0; i < words.length; i++) {
           //
-          if (i>6){
-            i+=words.length;
+          if (i > 6) {
+            i += words.length;
             msg.reply("由於輸入時間距過長 中斷搜尋")
           }
           msg.reply(words[i])
-         // msg.channel.send(words[i])
+          // msg.channel.send(words[i])
         }
       })
       await con.end();
@@ -2423,7 +2427,56 @@ client.on("message", async msg => {
       return re;
     }
 
+    async function chart_mongo_money(st_year, st_month, st_day, fin_year, fin_month, fin_day) {
+  let avg_price = [];
+  let avg_time = [];
 
+  var time1 = new Date(Date.UTC(parseInt(st_year), parseInt(st_month) - 1, parseInt(st_day), 0, 0, 0, 0));
+  //var utcDate = new Date(Date.UTC(2021,9,22,16,0,0,0));
+  var time2 = new Date(Date.UTC(parseInt(fin_year), parseInt(fin_month) - 1, parseInt(fin_day), 11, 59, 59, 0));
+  MongoClient.connect(uri, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("bot");
+    //var query = { objName:"a"};
+    //var query ={objName:"輪迴",time:{$gte:time1,$lt:time2}};
+    var query = { time: { $gte: time1, $lt: time2 } };
+    // var query ={time:{utcDate}};
+    // dbo.collection("current_prices").find(query,{ projection: {_id: 0,objName:1,avgprize:1,url:1 ,bestprize:1,time:1 } }).toArray(function(err, result) {
+    //  if (err) throw err;
+    //  console.log(result);
+    //  db.close();
+    // }
+    
+    dbo.collection("money").find(query, { projection: { _id: 0, bestprice: 1, time: 1 } }).toArray(function(err, result) {
+      if (err) throw err;
+      //console.log(result);
+     let word =JSON.stringify(result).split("{")
+      for (var i = 0; i < word.length; i++) {
+        
+        if (word[i].length > 10) {
+          let price_max_length = word[i].split(",")[0].length;
+          //console.log(word[i].split(",")[0].substring(12, price_max_length));
+          avg_price.push(parseInt(word[i].split(",")[0].substring(12, price_max_length)));
+
+          let date_max_length = word[i].search("T");
+         // console.log(word[i].split(",")[1].substring(8, 18));
+          avg_time.push(word[i].split(",")[1].substring(8, 18));
+      
+        }
+      }
+     
+   drawmoney("幣值", avg_time, avg_price, true);
+      db.close();
+    }
+
+
+    );
+
+
+
+  });
+      
+}
 
 
 
@@ -2443,7 +2496,7 @@ function compareDecimals(a, b) {
 ////418076288625016834
 //418076288625016832
 
-client.on('guildMemberAdd', member => {
+/**client.on('guildMemberAdd', member => {
   //member.roles.add(member.guild.roles.cache.find(i => i.name === 'Among The Server'))
 
   const welcomeEmbed = new Discord.MessageEmbed()
@@ -2470,7 +2523,9 @@ client.on('guildMemberRemove', member => {
 
   channel.send(goodbyeEmbed)
 
-})
+})**/
+
+
 
 keepAlive()
 client.login(token);
