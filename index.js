@@ -1505,7 +1505,8 @@ client.on("message", async msg => {
         msg.reply("起始年份不可大於結束年分")
       }
       msg.reply("mute my self");
-      await chart_search(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5], spli[6]);
+      //await chart_search(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5], spli[6]);
+      await chart_mongo_search(spli[0], spli[1], spli[2], spli[3], spli[4], spli[5], spli[6]);
       msging = true;
 
 
@@ -2478,7 +2479,46 @@ client.on("message", async msg => {
       
 }
 
+    async function chart_mongo_search(obj, st_year, st_month, st_day, fin_year, fin_month, fin_day){
+      let best_price = [];  
+      let avg_price = [];
+  let avg_time = [];
 
+  var time1 = new Date(Date.UTC(parseInt(st_year), parseInt(st_month) - 1, parseInt(st_day), 0, 0, 0, 0));
+  //var utcDate = new Date(Date.UTC(2021,9,22,16,0,0,0));
+  var time2 = new Date(Date.UTC(parseInt(fin_year), parseInt(fin_month) - 1, parseInt(fin_day), 11, 59, 59, 0));
+  MongoClient.connect(uri, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("bot");
+
+    var query = {objName: obj, time: { $gte: time1, $lt: time2 } };
+
+    
+    dbo.collection("current_prices").find(query, { projection: { objName:1,_id: 0, bestprize: 1,avgprize:1, 
+        time:{ $dateToString: { format: "%Y-%m-%d", date: "$time" } } } }).toArray(function(err, result) {
+      if (err) throw err;
+     // console.log(result);
+      const dataArray = result.map(item => [item.bestprize, item.avgprize, item.time]);
+      console.log(dataArray[0][0]);
+     let word =JSON.stringify(result).split("{")
+      for (var i = 0; i < dataArray.length; i++) {
+       best_price.push(dataArray[i][0]);
+      
+        avg_price.push(dataArray[i][1]);
+        avg_time.push(dataArray[i][2]);
+      }
+     
+    drawchart(obj, avg_time, best_price, avg_price, true)
+      db.close();
+    }
+
+
+    );
+
+
+
+  });
+    }
 
   }
 }
