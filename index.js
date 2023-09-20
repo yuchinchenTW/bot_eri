@@ -454,14 +454,14 @@ client.on("message", async msg => {
 
     if (msg.content === "乾淨滅龍") {
       item = "乾淨滅龍";
-      maxrange = 7000;
-      minrange = 2000;
+      maxrange = 5000;
+      minrange = 1000;
       check = "乾淨滅龍";
       search = true;
     } else if (msg.content === "輪迴") {
       item = "輪迴";
-      maxrange = 80000;
-      minrange = 25000;
+      maxrange = 40000;
+      minrange = 5000;
       check = "輪迴";
       search = true;
     } else if (msg.content === "武公寶珠") {
@@ -521,27 +521,27 @@ client.on("message", async msg => {
       search = true;
     } else if (msg.content === "精靈墜飾") {
       item = "精靈墜飾";
-      maxrange = 10000;
-      minrange = 1000;
+      maxrange = 3000;
+      minrange = 100;
       check = "精靈墜飾";
       search = true;
 
     } else if (msg.content === "眼球") {
       item = "眼球";
-      maxrange = 15000;
+      maxrange = 10000;
       minrange = 1000;
       check = "眼球";
       search = true;
     } else if (msg.content === "小筱") {
       item = "小筱";
-      maxrange = 8000;
-      minrange = 1000;
+      maxrange = 4000;
+      minrange = 400;
       check = "小筱";
       search = true;
     } else if (msg.content === "MX131") {
       item = "MX131";
-      maxrange = 2000;
-      minrange = 300;
+      maxrange = 1000;
+      minrange = 100;
       check = "MX131";
       search = true;
     } else if (msg.content === "黑翼") {
